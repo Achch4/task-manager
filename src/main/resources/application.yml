@@ -1,0 +1,8 @@
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/tma_bootcamp
+    username: root
+    password: akjjyglc69#
+  jpa:
+    hibernate:
+      ddl-auto: update
