@@ -1,22 +1,28 @@
 package edu.bootcamp.tma.controller;
 
+
 import edu.bootcamp.tma.dto.TaskDto;
-import edu.bootcamp.tma.entity.TaskEntity;
 import edu.bootcamp.tma.service.TaskService;
-import org.springframework.beans.factory.annotation.Autowired;
+
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 
 @RestController
+@RequestMapping("/tasks")
+@RequiredArgsConstructor
 public class TaskController {
-    @Autowired
-    private TaskService taskService;
+
+    private final TaskService taskService;
 
     @PostMapping("/save-task")
-    public TaskDto saveTask(@RequestBody TaskDto taskDto) {
-        return taskService.save(taskDto);
+    public ResponseEntity<TaskDto> saveTask(@RequestBody TaskDto taskDto) {
+       return ResponseEntity.status(HttpStatus.CREATED).
+               body(taskService.save(taskDto));
     }
 
     @GetMapping("/get-all-tasks")
@@ -27,6 +33,16 @@ public class TaskController {
     @GetMapping("/get-count")
     public Long getCount(){
        return taskService.getCount();
+    }
+
+    @PutMapping("/update-all")
+    public ResponseEntity<TaskDto> updateTask(@RequestBody TaskDto taskDto){
+        return ResponseEntity.ok(taskService.updateTask(taskDto));
+    }
+
+    @PatchMapping("/update-title")
+    public ResponseEntity<TaskDto> updateTitle(@RequestParam String oldTitle,@RequestParam String newTitle){
+        return ResponseEntity.ok(taskService.updateTitle(oldTitle,newTitle));
     }
 
     @DeleteMapping("/delete-task/{id}")
