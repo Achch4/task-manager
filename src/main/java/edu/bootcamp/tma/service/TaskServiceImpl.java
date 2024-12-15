@@ -7,9 +7,8 @@ import edu.bootcamp.tma.exception.TaskAlreadyExist;
 import edu.bootcamp.tma.repository.TaskRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
+
 
 import java.util.ArrayList;
 import java.util.List;
@@ -75,17 +74,18 @@ public class TaskServiceImpl implements TaskService{
 
         TaskEntity taskEntity = byDesc.get();
         taskEntity.setTitle(newTitle);
-
-
         return mapper.convertValue(taskRepository.save(taskEntity), TaskDto.class);
 
     }
 
+    @Override
     public void deleteTask(int id) {
-        TaskEntity taskEntity = new TaskEntity();
-        taskEntity.setId(id);
-        taskRepository.delete(taskEntity);
+        if (!taskRepository.existsById(id)) {
+            throw new TaskAlreadyExist("Task with ID " + id + " does not exist.");
+        }
+        taskRepository.deleteById(id);
     }
+
 
     public void deleteTaskIds(List<Integer> ids) {
         taskRepository.deleteAllById(ids);
