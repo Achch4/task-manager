@@ -36,22 +36,12 @@ public class TaskServiceImpl implements TaskService{
     }
 
     public List<TaskDto> getAllTasks() {
-
         Iterable<TaskEntity> allTasks = taskRepository.findAll();
-
         List<TaskDto> dtoList = new ArrayList<>();
-
-        allTasks.forEach(saved ->{
-            TaskDto dto = new TaskDto();
-
-            dto.setId(saved.getId());
-            dto.setTitle(saved.getTitle());
-            dto.setDescription(saved.getDescription());
-
-            dtoList.add(dto);
-        });
+        allTasks.forEach(task -> dtoList.add(mapper.convertValue(task, TaskDto.class)));
         return dtoList;
     }
+
 
     public Long getCount() {
         return taskRepository.count();
@@ -68,9 +58,10 @@ public class TaskServiceImpl implements TaskService{
     public TaskDto updateTitle(String oldTitle,String newTitle) {
 
         Optional<TaskEntity> byDesc = taskRepository.findByTitle(oldTitle);
-        if (byDesc.isEmpty()){
-            throw new TaskAlreadyExist("task already exist with title " + oldTitle);
+        if (byDesc.isEmpty()) {
+            throw new IllegalArgumentException("Task with title '" + oldTitle + "' does not exist.");
         }
+
 
         TaskEntity taskEntity = byDesc.get();
         taskEntity.setTitle(newTitle);
@@ -81,10 +72,11 @@ public class TaskServiceImpl implements TaskService{
     @Override
     public void deleteTask(int id) {
         if (!taskRepository.existsById(id)) {
-            throw new TaskAlreadyExist("Task with ID " + id + " does not exist.");
+            throw new IllegalArgumentException("Task with ID " + id + " does not exist.");
         }
         taskRepository.deleteById(id);
     }
+
 
 
     public void deleteTaskIds(List<Integer> ids) {
